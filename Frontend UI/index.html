@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShiftSwap – Student UI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- ===== Login/Register Screen ===== -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="logoBox auth-logo">ShiftSwap</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin">Login</button>
+        <button class="auth-tab" id="tabRegister">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form">
+        <div class="modalRow" style="grid-template-columns:1fr; gap: 4px;">
+          <div style="font-weight:700;">Username</div>
+          <input id="loginUsername" type="text" placeholder="Enter username" required />
+        </div>
+        <div class="modalRow" style="grid-template-columns:1fr; gap: 4px; margin-top: 12px;">
+          <div style="font-weight:700;">Password</div>
+          <input id="loginPassword" type="password" placeholder="Enter password" required />
+        </div>
+        <div id="loginError" class="auth-error" style="display:none; color: #dc2626; margin-top: 8px; font-size: 13px;">
+        </div>
+        <button type="submit" class="btn primary auth-btn" style="width: 100%; margin-top: 20px;">Login</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" class="auth-form" style="display:none;">
+        <div class="modalRow" style="grid-template-columns:1fr; gap: 4px;">
+          <div style="font-weight:700;">Email Address</div>
+          <input id="registerEmail" type="email" placeholder="Enter your email" required />
+        </div>
+        <div class="modalRow" style="grid-template-columns:1fr; gap: 4px; margin-top: 12px;">
+          <div style="font-weight:700;">Username</div>
+          <input id="registerUsername" type="text" placeholder="Choose a username" required />
+        </div>
+        <div class="modalRow" style="grid-template-columns:1fr; gap: 4px; margin-top: 12px;">
+          <div style="font-weight:700;">Password</div>
+          <input id="registerPassword" type="password" placeholder="Choose a password" required />
+        </div>
+        <div id="registerError" class="auth-error"
+          style="display:none; color: #dc2626; margin-top: 8px; font-size: 13px;"></div>
+        <button type="submit" class="btn primary auth-btn" style="width: 100%; margin-top: 20px;">Create
+          Account</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="app" id="mainApp" style="display:none;">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="logoBox">ShiftSwap</div>
+
+      <div class="searchWrap">
+        <input id="searchInput" placeholder="Search by date, time, name…" autocomplete="off" />
+        <button class="searchBtn" id="searchBtn" title="Search">🔍</button>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="iconBtn" id="bellBtn" title="Notifications">
+          🔔 <span class="dot" id="bellDot" aria-hidden="true"></span>
+        </button>
+
+        <button class="iconBtn" id="logoutBtn" title="Log Out / Switch Account">
+          🚪
+        </button>
+
+        <div class="userBox" id="userBtn" title="Edit Personal Information">
+          <div class="avatar" id="topAvatar">👤</div>
+          <div class="userMeta">
+            <strong id="topUserName">User</strong>
+            <span>Student</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Left Nav -->
+    <aside class="sidebar">
+      <div class="navTitle">Control Panel</div>
+    <nav class="navList">
+      <div class="navItem active" data-page="dashboard" id="navDashboard">Dashboard</div>
+      <div class="navItem" data-page="request" id="navRequest">Request</div>
+      <div class="navItem" data-page="myshift" id="navMyShift">My Shift</div>
+      <div class="navItem" data-page="todo" id="navTodo">To Do List</div>
+      <div class="navItem" data-page="available" id="navAvailable" style="display:none;">Available Shifts</div>
+      <div class="navItem" data-page="setting">Setting</div>
+    </nav>
+      <div class="navFooter">ShiftSwap</div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="pageHeader">
+        <h1 id="pageTitle">Dashboard</h1>
+        <div class="actionGroup" id="pageHeaderActions">
+          <div class="badge" id="pageBadge">Available shifts</div>
+          <button class="btn" id="adminViewBtn" style="display:none;">View</button>
+          <button class="btn primary" id="adminAddBtn" style="display:none;">Add</button>
+        </div>
+      </div>
+
+      <!-- Search Result Banner -->
+      <div class="searchBanner" id="searchBanner" style="display:none;">
+        <span id="searchBannerText"></span>
+        <button class="btnSmall" id="clearSearch">✕ Clear</button>
+      </div>
+
+      <section class="contentPanel">
+        <!-- Dashboard -->
+        <div class="panelInner" id="page-dashboard">
+          <div class="tableHeader">
+            <div>Date</div>
+            <div>Time</div>
+            <div>Status</div>
+          </div>
+          <div class="tableBody" id="dashList"></div>
+          <div class="emptyState" id="dashEmpty" style="display:none;">No shifts found.</div>
+        </div>
+
+        <!-- Request -->
+        <div class="panelInner" id="page-request" style="display:none;">
+          <div class="panelToolbar">
+            <button class="btn primary" id="createReqBtn">+ Send Request</button>
+          </div>
+        <div class="tableHeader fourCol">
+          <div>Date</div>
+          <div>Time</div>
+          <div>Request</div>
+          <div>Status / Action</div>
+        </div>
+          <div class="tableBody" id="reqList"></div>
+          <div class="emptyState" id="reqEmpty" style="display:none;">No requests found.</div>
+        </div>
+
+        <!-- My Shift -->
+        <div class="panelInner" id="page-myshift" style="display:none;">
+          <div class="panelToolbar">
+          </div>
+          <div class="tableHeader">
+            <div>Date</div>
+            <div>Time</div>
+            <div>Edit</div>
+          </div>
+          <div class="tableBody" id="myList"></div>
+          <div class="emptyState" id="myEmpty" style="display:none;">No shifts yet.</div>
+        </div>
+
+        <!-- To Do List -->
+        <div class="panelInner" id="page-todo" style="display:none;">
+          <div class="panelToolbar" style="justify-content: space-between; align-items: center;">
+            <div class="filterGroup" id="todoFilters">
+              <button class="pill active" data-filter="all">All</button>
+              <button class="pill" data-filter="active">Active</button>
+              <button class="pill" data-filter="completed">Completed</button>
+            </div>
+            <button class="btn primary" id="addTodoBtn">+ Add Task</button>
+          </div>
+          <div class="tableHeader">
+            <div>Task</div>
+            <div>Status</div>
+            <div style="text-align: right;">Action</div>
+          </div>
+          <div class="tableBody" id="todoList"></div>
+          <div class="emptyState" id="todoEmpty" style="display:none;">No tasks found.</div>
+        </div>
+
+        <!-- Available Shifts -->
+        <div class="panelInner" id="page-available" style="display:none;">
+          <div class="tableHeader fourCol">
+            <div>Date</div>
+            <div>Time</div>
+            <div>Status</div>
+            <div>Action</div>
+          </div>
+          <div class="tableBody" id="availableShiftList"></div>
+          <div class="emptyState" id="availableShiftEmpty" style="display:none;">No available shifts.</div>
+        </div>
+
+        <!-- Setting -->
+        <div class="panelInner" id="page-setting" style="display:none;">
+          <div class="settingsTop">
+            <div class="settingsAvatar" id="settingsAvatarIcon">👤</div>
+            <div class="settingsName">
+              <strong id="settingsUserName">User</strong>
+              <span id="settingsUserEmail">user@uwec.edu</span>
+            </div>
+          </div>
+
+          <div class="settingsList">
+            <div class="settingRow">
+              <div class="label">Theme Color</div>
+              <div class="toggleWrap">
+                <span class="pill ok" id="themePreview">Current</span>
+                <button class="btn" id="openTheme">Change…</button>
+              </div>
+            </div>
+
+            <div class="settingRow">
+              <div class="label">Information Notification</div>
+              <div class="toggleWrap">
+                <div class="toggle on" id="toggleInfo" role="switch" aria-checked="true">
+                  <div class="knob"></div>
+                </div>
+                <span id="infoState" class="pill ok">On</span>
+              </div>
+            </div>
+
+            <div class="settingRow">
+              <div class="label">Workday Reminder</div>
+              <div class="toggleWrap">
+                <div class="toggle on" id="toggleReminder" role="switch" aria-checked="true">
+                  <div class="knob"></div>
+                </div>
+                <select id="reminderSelect" aria-label="Reminder time">
+                  <option value="5">5 min in advance</option>
+                  <option value="10">10 min in advance</option>
+                  <option value="15" selected>15 min in advance</option>
+                  <option value="30">30 min in advance</option>
+                  <option value="45">45 min in advance</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settingRow">
+              <div class="label">Feedback</div>
+              <div class="toggleWrap">
+                <button class="btn" id="feedbackBtn">Open Feedback Form</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===== Personal Info Modal ===== -->
+  <div class="overlay" id="overlayPersonal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalPersonalTitle">
+      <div class="modalHeader">
+        <span id="modalPersonalTitle">Personal Information</span>
+        <button class="btn" data-close="overlayPersonal">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="modalRow">
+          <div>Username</div>
+          <input id="inputName" value="User" placeholder="Your display name" />
+        </div>
+        <div class="modalRow">
+          <div>Email</div>
+          <input id="inputEmail" type="email" value="user@uwec.edu" placeholder="your@uwec.edu" />
+        </div>
+        <div class="modalRow">
+          <div>Password</div>
+          <input id="inputPwd" type="password" value="password" placeholder="New password" />
+        </div>
+      </div>
+      <div class="modalFooter">
+        <button class="btn" data-close="overlayPersonal">Cancel</button>
+        <button class="btn primary" id="savePersonal">Save</button>
+      </div>
+    </div>
+  </div>
+
+<!-- ===== Theme Modal ===== -->
+<div class="overlay" id="overlayTheme" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalThemeTitle">
+    <div class="modalHeader">
+      <span id="modalThemeTitle">Theme Settings</span>
+      <button class="btn" data-close="overlayTheme">✕</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="themeSection">
+        <div class="themeSectionTitle">Theme Color</div>
+        <div class="themeColorGrid" id="themePresetGroup">
+          <button class="themeColorCard active" data-theme="blue" type="button" title="Blue theme">
+            <span class="colorDots">
+              <i style="background:#4f46e5"></i>
+              <i style="background:#818cf8"></i>
+              <i style="background:#eef2ff"></i>
+            </span>
+            <span class="themeLabel">Blue</span>
+          </button>
+
+          <button class="themeColorCard" data-theme="pink" type="button" title="Pink theme">
+            <span class="colorDots">
+              <i style="background:#db2777"></i>
+              <i style="background:#f472b6"></i>
+              <i style="background:#fdf2f8"></i>
+            </span>
+            <span class="themeLabel">Pink</span>
+          </button>
+
+          <button class="themeColorCard" data-theme="green" type="button" title="Green theme">
+            <span class="colorDots">
+              <i style="background:#059669"></i>
+              <i style="background:#34d399"></i>
+              <i style="background:#ecfdf5"></i>
+            </span>
+            <span class="themeLabel">Green</span>
+          </button>
+
+          <button class="themeColorCard" data-theme="purple" type="button" title="Purple theme">
+            <span class="colorDots">
+              <i style="background:#7c3aed"></i>
+              <i style="background:#a78bfa"></i>
+              <i style="background:#f5f3ff"></i>
+            </span>
+            <span class="themeLabel">Purple</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="themeSection">
+        <div class="themeSectionTitle">Font Color</div>
+        <div class="fontColorGrid" id="fontPresetGroup">
+          <button class="fontColorCard active" data-font="dark" type="button">
+            <span class="fontSample" style="background:#1e293b;"></span>
+            <span>Dark</span>
+          </button>
+
+          <button class="fontColorCard" data-font="soft" type="button">
+            <span class="fontSample" style="background:#64748b;"></span>
+            <span>Soft Gray</span>
+          </button>
+
+          <button class="fontColorCard" data-font="navy" type="button">
+            <span class="fontSample" style="background:#1e3a5f;"></span>
+            <span>Navy</span>
+          </button>
+
+          <button class="fontColorCard" data-font="brown" type="button">
+            <span class="fontSample" style="background:#6b4f3a;"></span>
+            <span>Warm Brown</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="themePreviewBox" id="themePreviewBox">
+        <span>Theme Preview</span>
+      </div>
+    </div>
+
+    <div class="modalFooter">
+      <button class="btn" id="resetTheme">Reset</button>
+      <button class="btn" data-close="overlayTheme">Cancel</button>
+      <button class="btn primary" id="applyTheme">Apply</button>
+    </div>
+  </div>
+</div>
+
+  <!-- ===== Edit Shift Modal ===== -->
+  <div class="overlay" id="overlayEditShift" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalEditTitle">
+      <div class="modalHeader">
+        <span id="modalEditTitle">Edit Shift</span>
+        <button class="btn" data-close="overlayEditShift">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="modalRow">
+          <div>Date</div>
+          <input id="editShiftDate" type="date" />
+        </div>
+        <div class="modalRow">
+          <div>Start Time</div>
+          <input id="editShiftStart" type="time" />
+        </div>
+        <div class="modalRow">
+          <div>End Time</div>
+          <input id="editShiftEnd" type="time" />
+        </div>
+      </div>
+      <div class="modalFooter">
+        <button class="btn danger" id="deleteShiftBtn">Delete Shift</button>
+        <button class="btn" data-close="overlayEditShift">Cancel</button>
+        <button class="btn primary" id="saveShiftBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Add ToDo Modal ===== -->
+  <div class="overlay" id="overlayAddTodo" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalAddTodoTitle">
+      <div class="modalHeader">
+        <span id="modalAddTodoTitle">Add New Task</span>
+        <button class="btn" data-close="overlayAddTodo">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="modalRow" style="grid-template-columns:1fr;">
+          <div style="font-weight:700;margin-bottom:4px;">Task Description</div>
+          <input id="addTodoText" type="text" placeholder="What needs to be done?" />
+        </div>
+        <div class="modalRow" style="grid-template-columns:1fr; margin-top: 10px;">
+          <div style="font-weight:700;margin-bottom:4px;">Assign To</div>
+          <select id="addTodoAssignee">
+            <option value="">Self</option>
+          </select>
+        </div>
+      </div>
+      <div class="modalFooter">
+        <button class="btn" data-close="overlayAddTodo">Cancel</button>
+        <button class="btn primary" id="confirmAddTodo">Add Task</button>
+      </div>
+    </div>
+  </div>
+
+<!-- ===== Create Request Modal ===== -->
+<div class="overlay" id="overlayCreateRequest" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalCreateReqTitle">
+    <div class="modalHeader">
+      <span id="modalCreateReqTitle">Send Swap Request</span>
+      <button class="btn" data-close="overlayCreateRequest">✕</button>
+    </div>
+
+    <div class="modalBody">
+
+      <!-- 选择班次 -->
+      <div class="modalRow">
+        <div>Shift</div>
+        <select id="createReqShift">
+          <option value="">Select your shift...</option>
+        </select>
+      </div>
+
+      <!-- 类型 -->
+      <div class="modalRow">
+        <div>Request Type</div>
+        <select id="createReqType">
+          <option value="anyone">Anyone</option>
+          <option value="specific">Specific Person</option>
+        </select>
+      </div>
+
+      <!-- 指定人（默认隐藏） -->
+      <div class="modalRow" id="createReqRecipientRow" style="display:none;">
+        <div>Recipient</div>
+        <select id="createReqName">
+          <option value="">Select a user...</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="modalFooter">
+      <button class="btn" data-close="overlayCreateRequest">Cancel</button>
+      <button class="btn primary" id="confirmCreateReq">Submit</button>
+    </div>
+  </div>
+</div>
+
+  <!-- ===== Notification Panel ===== -->
+  <div class="overlay" id="overlayNotif" aria-hidden="true">
+    <div class="modal notifModal" role="dialog" aria-modal="true" aria-labelledby="modalNotifTitle">
+      <div class="modalHeader">
+        <span id="modalNotifTitle">🔔 Notifications</span>
+        <button class="btn" data-close="overlayNotif">✕</button>
+      </div>
+      <div class="modalBody notifBody" id="notifList">
+        <!-- filled by JS -->
+      </div>
+      <div class="modalFooter">
+        <button class="btn" id="markAllRead">Mark all as read</button>
+        <button class="btn" data-close="overlayNotif">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Feedback Modal ===== -->
+  <div class="overlay" id="overlayFeedback" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalFeedbackTitle">
+      <div class="modalHeader">
+        <span id="modalFeedbackTitle">Feedback</span>
+        <button class="btn" data-close="overlayFeedback">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="modalRow" style="grid-template-columns:1fr;">
+          <div style="font-weight:700;margin-bottom:4px;">Category</div>
+          <select id="feedbackCategory">
+            <option value="bug">Bug Report</option>
+            <option value="feature">Feature Request</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="modalRow" style="grid-template-columns:1fr;">
+          <div style="font-weight:700;margin-bottom:4px;">Message</div>
+          <textarea id="feedbackText" rows="5" placeholder="Describe your feedback…"
+            style="padding:10px;border-radius:10px;border:2px solid var(--line);outline:none;font-family:var(--font);font-size:14px;resize:vertical;"></textarea>
+        </div>
+      </div>
+      <div class="modalFooter">
+        <button class="btn" data-close="overlayFeedback">Cancel</button>
+        <button class="btn primary" id="submitFeedback">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Admin Add Shift Modal ===== -->
+<div class="overlay" id="overlayAdminAddShift" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalAdminAddTitle">
+    <div class="modalHeader">
+      <span id="modalAdminAddTitle">Assign Shift</span>
+      <button class="btn" data-close="overlayAdminAddShift">✕</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="modalRow">
+        <div>Employee</div>
+        <select id="adminShiftUser">
+          <option value="">Select employee...</option>
+        </select>
+      </div>
+
+      <div class="modalRow">
+        <div>Date</div>
+        <input id="adminShiftDate" type="date" />
+      </div>
+
+      <div class="modalRow">
+        <div>Start Time</div>
+        <input id="adminShiftStart" type="time" />
+      </div>
+
+      <div class="modalRow">
+        <div>End Time</div>
+        <input id="adminShiftEnd" type="time" />
+      </div>
+    </div>
+
+    <div class="modalFooter">
+      <button class="btn" data-close="overlayAdminAddShift">Cancel</button>
+      <button class="btn primary" id="confirmAdminAddShift">Add Shift</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Admin Add Available Shift Modal ===== -->
+<div class="overlay" id="overlayAdminAddAvailableShift" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalAdminAddAvailableShiftTitle">
+    <div class="modalHeader">
+      <span id="modalAdminAddAvailableShiftTitle">Add Available Shift</span>
+      <button class="btn" data-close="overlayAdminAddAvailableShift">✕</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="modalRow">
+        <div>Date</div>
+        <input id="availableShiftDate" type="date" />
+      </div>
+
+      <div class="modalRow">
+        <div>Start Time</div>
+        <input id="availableShiftStart" type="time" />
+      </div>
+
+      <div class="modalRow">
+        <div>End Time</div>
+        <input id="availableShiftEnd" type="time" />
+      </div>
+    </div>
+
+    <div class="modalFooter">
+      <button class="btn" data-close="overlayAdminAddAvailableShift">Cancel</button>
+      <button class="btn primary" id="confirmAdminAddAvailableShift">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Weekly Schedule Modal ===== -->
+<div class="overlay" id="overlayWeekView" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalWeekViewTitle" style="width:min(1100px, 100%);">
+    <div class="modalHeader">
+      <span id="modalWeekViewTitle">Weekly Shift Calendar</span>
+      <button class="btn" data-close="overlayWeekView">✕</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="calendarToolbar">
+        <button class="btn" id="prevWeekBtn">← Prev Week</button>
+        <div class="calendarRange" id="calendarRangeLabel">Week</div>
+        <button class="btn" id="todayWeekBtn">Today</button>
+        <button class="btn" id="nextWeekBtn">Next Week →</button>
+      </div>
+
+      <div id="weekCalendarGrid" class="weekCalendarGrid"></div>
+    </div>
+
+    <div class="modalFooter">
+      <button class="btn" data-close="overlayWeekView">Close</button>
+    </div>
+  </div>
+</div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast"></div>
+
+  <script defer src="app.js"></script>
+</body>
+
+</html>
